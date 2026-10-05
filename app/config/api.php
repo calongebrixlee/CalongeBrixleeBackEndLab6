@@ -147,6 +147,10 @@ $config['users_table'] = 'users';
 $config['allow_origin'] = array_values(array_unique([
     getenv('FRONTEND_ORIGIN') ?: 'http://localhost:5173',
     'https://calongebrixleefrontendlab6.onrender.com',
+    'http://localhost:5174',
+    'http://localhost:5175',
+    'http://127.0.0.1:5174',
+    'http://127.0.0.1:5175',
 ]));
 
 /*
