@@ -24,7 +24,7 @@ services:
       - key: DB_SSL_CA
         value: /etc/secrets/ca.pem
       - key: FRONTEND_ORIGIN
-        value: https://lavalust-products-ui.onrender.com
+        value: https://calongebrixleefrontendlab6.onrender.com
       - key: INITIAL_ADMIN_EMAIL
         sync: false
       - key: INITIAL_ADMIN_PASSWORD
@@ -44,7 +44,7 @@ services:
     staticPublishPath: dist
     envVars:
       - key: VITE_API_BASE_URL
-        value: https://lavalust-products-api.onrender.com/api
+        value: https://calongebrixleebackendlab6.onrender.com/api
     routes:
       - type: rewrite
         source: /*
