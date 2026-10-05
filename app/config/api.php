@@ -139,19 +139,11 @@ $config['users_table'] = 'users';
 | Access-Control-Allow-Origin
 |--------------------------------------------------------------------------
 |
-| FRONTEND_ORIGIN restricts browser access to the configured frontend.
-| The deployed production frontend is also allowed so CORS continues to
-| work while Render environment changes are being synchronized.
+| FRONTEND_ORIGIN restricts browser access to the frontend origin.
+| Set it to your deployed frontend URL in production.
 |
 */
-$config['allow_origin'] = array_values(array_unique([
-    getenv('FRONTEND_ORIGIN') ?: 'http://localhost:5173',
-    'https://calongebrixleefrontendlab6.onrender.com',
-    'http://localhost:5174',
-    'http://localhost:5175',
-    'http://127.0.0.1:5174',
-    'http://127.0.0.1:5175',
-]));
+$config['allow_origin'] = getenv('FRONTEND_ORIGIN') ?: 'http://localhost:5173';
 
 /*
 |--------------------------------------------------------------------------
