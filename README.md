@@ -195,6 +195,7 @@ This project includes a product CRUD API protected by LavaLust's JWT authenticat
 
 | Method | Endpoint | Description |
 | --- | --- | --- |
+| POST | `/api/auth/register` | Create a user account and return tokens |
 | POST | `/api/auth/login` | Sign in with `email` (or `username`) and `password`; returns access and refresh tokens |
 | GET | `/api/auth/me` | Get the current authenticated user |
 | POST | `/api/auth/refresh` | Exchange a valid `refresh_token` for a new token pair |
@@ -208,6 +209,8 @@ INITIAL_ADMIN_EMAIL=admin@example.com INITIAL_ADMIN_PASSWORD='use-a-long-unique-
 ```
 
 Set `INITIAL_ADMIN_USERNAME` optionally. The initial administrator is only added when the email/password variables are provided; the password must be at least 12 characters. Keep these secrets out of source control.
+
+The API root (`/`) returns a JSON status document and a list of available endpoints.
 
 The included React app is in `frontend/`. Run it locally with:
 

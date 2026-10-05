@@ -48,6 +48,7 @@ $router->get('/', 'Welcome::index');
 
 // Product API
 $router->get('api/health', 'Auth::health');
+$router->post('api/auth/register', 'Auth::register');
 $router->post('api/auth/login', 'Auth::login');
 $router->get('api/auth/me', 'Auth::me');
 $router->post('api/auth/refresh', 'Auth::refresh');

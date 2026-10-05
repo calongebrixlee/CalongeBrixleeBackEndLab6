@@ -19,6 +19,81 @@ class Auth extends Controller {
         $this->api->respond(['status' => 'ok']);
     }
 
+    public function register()
+    {
+        $this->api->rate_limit(
+            'register-' . ($_SERVER['REMOTE_ADDR'] ?? 'unknown'),
+            5,
+            60
+        );
+
+        $input = $this->request->json();
+        if (!is_array($input)) {
+            $this->api->respond_error('Request body must be a valid JSON object', 400);
+        }
+
+        $username = $input['username'] ?? null;
+        $email = $input['email'] ?? null;
+        $password = $input['password'] ?? null;
+        $errors = [];
+
+        if (
+            !is_string($username)
+            || !preg_match('/^[A-Za-z0-9_.-]{3,100}$/', $username)
+        ) {
+            $errors['username'] = 'Username must be 3-100 characters and contain only letters, numbers, dots, underscores, or hyphens.';
+        }
+
+        if (!is_string($email) || !filter_var(trim($email), FILTER_VALIDATE_EMAIL) || strlen(trim($email)) > 255) {
+            $errors['email'] = 'A valid email address of at most 255 characters is required.';
+        } else {
+            $email = strtolower(trim($email));
+        }
+
+        if (!is_string($password) || strlen($password) < 12 || strlen($password) > 72) {
+            $errors['password'] = 'Password must be between 12 and 72 characters.';
+        }
+
+        if ($errors) {
+            $this->api->respond([
+                'error'   => 'Validation failed',
+                'details' => $errors,
+                'status'  => 422,
+            ], 422);
+        }
+
+        $existing = $this->db->raw(
+            'SELECT id FROM users WHERE email = ? OR username = ? LIMIT 1',
+            [$email, $username]
+        )->fetch(PDO::FETCH_ASSOC);
+
+        if ($existing) {
+            $this->api->respond_error('Email or username is already registered', 409);
+        }
+
+        $this->db->raw(
+            'INSERT INTO users (username, email, password, role, is_active) VALUES (?, ?, ?, ?, ?)',
+            [$username, $email, password_hash($password, PASSWORD_DEFAULT), 'user', 1]
+        );
+        $user_id = $this->db->raw('SELECT id FROM users WHERE email = ? LIMIT 1', [$email])->fetchColumn();
+
+        $tokens = $this->api->issue_tokens([
+            'id'     => $user_id,
+            'role'   => 'user',
+            'scopes' => ['read'],
+        ]);
+
+        $this->api->respond([
+            'user' => [
+                'id'       => (int) $user_id,
+                'username' => $username,
+                'email'    => $email,
+                'role'     => 'user',
+            ],
+            'tokens' => $tokens,
+        ], 201);
+    }
+
     public function login()
     {
         $this->api->rate_limit(
