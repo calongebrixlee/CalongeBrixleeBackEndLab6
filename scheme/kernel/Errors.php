@@ -143,6 +143,16 @@ class Errors
 		} else {
 			error_log('LavaLust database error: ' . $message);
 		}
+
+		if (strpos($_SERVER['REQUEST_URI'] ?? '', '/api/') === 0) {
+			http_response_code(503);
+			header('Content-Type: application/json; charset=utf-8');
+			echo json_encode([
+				'error'  => 'The API database is unavailable. Verify the Render database environment variables and Aiven SSL CA file.',
+				'status' => 503,
+			], JSON_UNESCAPED_SLASHES);
+			exit();
+		}
 		
 		if (config_item('environment') !== 'development') {
 			exit();
