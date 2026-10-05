@@ -163,6 +163,7 @@ class Api
         $this->_lava = lava_instance();
         $this->_lava->call->library('cache');
         $this->_lava->config->load('api');
+        handle_cors();
 
         if (!config_item('api_helper_enabled')) {
             show_error('Api Helper is disabled or set up incorrectly.');
@@ -190,12 +191,10 @@ class Api
         // Fail closed: refuse to start with a missing, weak or publicly known secret.
         $this->assert_secret_is_safe($this->jwt_secret, 'jwt_secret');
         $this->assert_secret_is_safe($this->refresh_token_key, 'refresh_token_key');
-
         if (hash_equals((string) $this->jwt_secret, (string) $this->refresh_token_key)) {
-            show_error('jwt_secret and refresh_token_key must be different values.');
+            error_log('LavaLust API configuration error: JWT_SECRET and REFRESH_TOKEN_KEY must be different.');
+            $this->respond_error('API authentication is not configured correctly.', 503);
         }
-
-        handle_cors();
     }
 
     /**
@@ -213,12 +212,14 @@ class Api
         $secret = (string) $secret;
 
         if ($secret === '' || strlen($secret) < self::MIN_SECRET_LENGTH) {
-            show_error("{$name} is missing or too short. Use at least " . self::MIN_SECRET_LENGTH . " random characters.");
+            error_log("LavaLust API configuration error: {$name} is missing or too short.");
+            $this->respond_error('API authentication is not configured correctly.', 503);
         }
 
         // Reject trivially low-entropy values such as "aaaaaaaa..." or "1234123412...".
         if (count(array_unique(str_split($secret))) < 10) {
-            show_error("{$name} has too little entropy. Use a random value.");
+            error_log("LavaLust API configuration error: {$name} has too little entropy.");
+            $this->respond_error('API authentication is not configured correctly.', 503);
         }
     }
 
