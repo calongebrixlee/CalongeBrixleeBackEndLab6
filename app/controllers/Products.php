@@ -62,7 +62,10 @@ class Products extends Controller {
             $created = ['id' => (int) $id] + $product['data'];
         }
 
-        $this->api->respond(['data' => $created], 201);
+        $this->api->respond([
+            'data' => $created,
+            'id'   => (int) $id,
+        ], 201);
     }
 
     public function update($id)
