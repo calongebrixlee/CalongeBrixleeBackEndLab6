@@ -177,6 +177,7 @@ class Api
         $this->jwt_secret               = config_item('jwt_secret');
         $this->refresh_token_key        = config_item('refresh_token_key');
         $this->allow_origin             = config_item('allow_origin');
+        handle_cors();
 
         // JWT config
         $this->jwt_issuer              = config_item('jwt_issuer') ?? $this->jwt_issuer;
@@ -194,8 +195,6 @@ class Api
         if (hash_equals((string) $this->jwt_secret, (string) $this->refresh_token_key)) {
             show_error('jwt_secret and refresh_token_key must be different values.');
         }
-
-        handle_cors();
     }
 
     /**
