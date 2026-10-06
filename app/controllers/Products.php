@@ -44,28 +44,59 @@ class Products extends Controller {
 
     public function create()
     {
-        $this->api->require_jwt();
+        header('Access-Control-Expose-Headers: X-Product-Create-Handler, X-Product-Create-Step');
+        header('X-Product-Create-Handler: products-create-v1');
+        header('X-Product-Create-Step: authentication');
+        $id = null;
+        $step = 'authentication';
 
-        $input = $this->read_input();
-        $product = $this->validated_product($input);
-        if (isset($product['errors'])) {
-            $this->respond_validation_errors($product['errors']);
+        try {
+            $this->api->require_jwt();
+
+            $step = 'validation';
+            header('X-Product-Create-Step: ' . $step);
+            $input = $this->read_input();
+            $product = $this->validated_product($input);
+            if (isset($product['errors'])) {
+                $this->respond_validation_errors($product['errors']);
+            }
+
+            $step = 'insert';
+            header('X-Product-Create-Step: ' . $step);
+            $id = $this->db->table('products')->insert($product['data']);
+            if (!is_numeric($id) || (int) $id < 1) {
+                $this->api->respond_error('Product could not be saved. Please try again.', 500);
+            }
+
+            $step = 'confirmation';
+            header('X-Product-Create-Step: ' . $step);
+            $created = $this->find_product($id);
+            if (!$created) {
+                $created = ['id' => (int) $id] + $product['data'];
+            }
+
+            header('X-Product-Create-Step: complete');
+            $this->api->respond([
+                'data' => $created,
+                'id'   => (int) $id,
+            ], 201);
+        } catch (Throwable $error) {
+            error_log(sprintf(
+                'Product create failed during %s (%s): %s',
+                $step,
+                get_class($error),
+                $error->getMessage()
+            ));
+
+            if (is_numeric($id) && (int) $id > 0) {
+                $this->api->respond([
+                    'data' => ['id' => (int) $id] + ($product['data'] ?? []),
+                    'id'   => (int) $id,
+                ], 201);
+            }
+
+            $this->api->respond_error('Product could not be saved. Check the backend logs for details.', 500);
         }
-
-        $id = $this->db->table('products')->insert($product['data']);
-        if (!is_numeric($id) || (int) $id < 1) {
-            $this->api->respond_error('Product could not be saved. Please try again.', 500);
-        }
-
-        $created = $this->find_product($id);
-        if (!$created) {
-            $created = ['id' => (int) $id] + $product['data'];
-        }
-
-        $this->api->respond([
-            'data' => $created,
-            'id'   => (int) $id,
-        ], 201);
     }
 
     public function update($id)
