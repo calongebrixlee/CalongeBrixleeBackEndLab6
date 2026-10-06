@@ -475,12 +475,21 @@ if ( ! function_exists('handle_cors'))
 	function handle_cors()
 	{
 		$allow_origin = config_item('allow_origin');
+		if (is_string($allow_origin) && strpos($allow_origin, ',') !== false) {
+			$allow_origin = array_map('trim', explode(',', $allow_origin));
+		}
 		$origin = $_SERVER['HTTP_ORIGIN'] ?? '';
 
+		$allowed = false;
 		if (is_array($allow_origin)) {
-			$allowed = in_array($origin, $allow_origin, true);
+			foreach ($allow_origin as $allowed_origin) {
+				if ($allowed_origin === '*' || $origin === $allowed_origin || ($allowed_origin !== '' && strpos($allowed_origin, '*') !== false && preg_match('/^' . str_replace('\*', '.*', preg_quote($allowed_origin, '/')) . '$/i', $origin))) {
+					$allowed = true;
+					break;
+				}
+			}
 		} else {
-			$allowed = $allow_origin === '*' || $allow_origin === $origin;
+			$allowed = $allow_origin === '*' || $allow_origin === $origin || ($allow_origin !== '' && strpos($allow_origin, '*') !== false && preg_match('/^' . str_replace('\*', '.*', preg_quote($allow_origin, '/')) . '$/i', $origin));
 		}
 
 		if ($allowed && $origin) {

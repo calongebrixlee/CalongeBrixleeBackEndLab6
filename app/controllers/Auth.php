@@ -50,8 +50,8 @@ class Auth extends Controller {
             $email = strtolower(trim($email));
         }
 
-        if (!is_string($password) || strlen($password) < 12 || strlen($password) > 72) {
-            $errors['password'] = 'Password must be between 12 and 72 characters.';
+        if (!is_string($password) || trim($password) === '' || strlen($password) > 72) {
+            $errors['password'] = 'Password is required and must be at most 72 characters.';
         }
 
         if ($errors) {

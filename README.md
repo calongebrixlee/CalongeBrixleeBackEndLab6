@@ -208,7 +208,7 @@ php lava jwt:generate
 INITIAL_ADMIN_EMAIL=admin@example.com INITIAL_ADMIN_PASSWORD='use-a-long-unique-password' php lava migration run
 ```
 
-Set `INITIAL_ADMIN_USERNAME` optionally. The initial administrator is only added when the email/password variables are provided; the password must be at least 12 characters. Keep these secrets out of source control.
+Set `INITIAL_ADMIN_USERNAME` optionally. The initial administrator is only added when the email/password variables are provided; use a secure password and keep these secrets out of source control.
 
 The API root (`/`) returns a JSON status document and a list of available endpoints.
 
@@ -224,7 +224,7 @@ Set `VITE_API_BASE_URL` to the API base URL (default: `http://localhost:3000/api
 
 To deploy the API and UI with Render, create a Blueprint from `render.yaml`. Add your Aiven MySQL host, port, database, username and password to the API service environment, and add Aiven's CA certificate in Render's Secret Files at `/etc/secrets/ca.pem`. Set the initial admin email and a unique password before the first deployment; the container applies pending migrations on startup. The Blueprint sets the UI URL as the CORS origin. Keep generated `JWT_SECRET` and `REFRESH_TOKEN_KEY` values private and do not commit them.
 
-For a local SQLite database, generate API keys, set the initial administrator credentials in `.env`, then run migrations. Use a unique password of at least 12 characters:
+For a local SQLite database, generate API keys, set the initial administrator credentials in `.env`, then run migrations. Use a unique, secure password:
 
 ```sh
 php lava jwt:generate

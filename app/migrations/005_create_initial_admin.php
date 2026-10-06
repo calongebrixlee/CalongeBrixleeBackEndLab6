@@ -21,9 +21,9 @@ class Create_initial_admin {
             );
         }
 
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL) || strlen($password) < 12) {
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL) || trim($password) === '') {
             throw new RuntimeException(
-                'Set a valid INITIAL_ADMIN_EMAIL and an INITIAL_ADMIN_PASSWORD of at least 12 characters, or leave both unset.'
+                'Set a valid INITIAL_ADMIN_EMAIL and a non-empty INITIAL_ADMIN_PASSWORD, or leave both unset.'
             );
         }
 

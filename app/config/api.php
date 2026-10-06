@@ -140,10 +140,19 @@ $config['users_table'] = 'users';
 |--------------------------------------------------------------------------
 |
 | FRONTEND_ORIGIN restricts browser access to the frontend origin.
-| Set it to your deployed frontend URL in production.
+| Set it to your deployed frontend URL in production. Render apps can use a
+| wildcard like https://*.onrender.com or a comma-separated list of origins.
 |
 */
-$config['allow_origin'] = getenv('FRONTEND_ORIGIN') ?: 'http://localhost:5173';
+$frontend_origins = array_filter(array_map(
+	'trim',
+	explode(',', getenv('FRONTEND_ORIGIN') ?: 'http://localhost:5173')
+));
+$config['allow_origin'] = array_values(array_unique(array_merge(
+	$frontend_origins,
+	// Keep the deployed UI allowed even if Render retains a stale env value.
+	['https://calongebrixleefrontendlab6.onrender.com']
+)));
 
 /*
 |--------------------------------------------------------------------------
