@@ -57,16 +57,27 @@ defined('PREVENT_DIRECT_ACCESS') OR exit('No direct script access allowed');
 |   Example: $database['another_example'] = array('key' => 'value')
 */
 
+$database_host = getenv('DB_HOST') ?: 'localhost';
+$database_ssl_ca = getenv('DB_SSL_CA') ?: '';
+$bundled_aiven_ca = defined('ROOT_DIR') ? ROOT_DIR . 'aiven-ca.pem' : dirname(__DIR__, 2) . DIRECTORY_SEPARATOR . 'aiven-ca.pem';
+
+if (
+    $database_host === 'mysql-299de89-calongebrixlee-4300.e.aivencloud.com'
+    && is_readable($bundled_aiven_ca)
+) {
+    $database_ssl_ca = $bundled_aiven_ca;
+}
+
 $database['main'] = array(
     'driver'    => getenv('DB_DRIVER') ?: 'sqlite',
-    'hostname'  => getenv('DB_HOST') ?: 'localhost',
+    'hostname'  => $database_host,
     'port'      => getenv('DB_PORT') ?: '',
     'username'  => getenv('DB_USER') ?: '',
     'password'  => getenv('DB_PASSWORD') ?: '',
     'database'  => getenv('DB_NAME') ?: '',
     'charset'   => getenv('DB_CHARSET') ?: 'utf8mb4',
     'dbprefix'  => getenv('DB_PREFIX') ?: '',
-    'ssl_ca'    => getenv('DB_SSL_CA') ?: '',
+    'ssl_ca'    => $database_ssl_ca,
     // Optional for SQLite
     'path'      => getenv('DB_PATH') ?: (defined('ROOT_DIR') ? ROOT_DIR . 'runtime' . DIRECTORY_SEPARATOR . 'lavalust.sqlite' : 'runtime' . DIRECTORY_SEPARATOR . 'lavalust.sqlite')
 );
