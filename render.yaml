@@ -22,7 +22,7 @@ services:
       - key: DB_NAME
         value: mydb
       - key: DB_SSL_CA
-        value: /etc/secrets/ca.pem
+        value: /var/www/html/aiven-ca.pem
       - key: FRONTEND_ORIGIN
         value: https://calongebrixleefrontendlab6.onrender.com
       - key: INITIAL_ADMIN_EMAIL
