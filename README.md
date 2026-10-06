@@ -222,7 +222,7 @@ npm run dev
 
 Set `VITE_API_BASE_URL` to the API base URL (default: `http://localhost:3000/api`) when using a different local API address. The React app keeps bearer tokens in `sessionStorage`, refreshes expired access tokens, and provides login, product listing, add/edit/delete, and logout.
 
-To deploy the API and UI with Render, create a Blueprint from `render.yaml`. Add your Aiven MySQL password to the API service environment and set the initial admin email and password before the first deployment; the container applies pending migrations on startup. The Aiven Project CA certificate is bundled as `aiven-ca.pem` and configured as the MySQL SSL CA. Update this certificate if the Aiven project CA is rotated. The Blueprint sets the UI URL as the CORS origin. Keep generated `JWT_SECRET` and `REFRESH_TOKEN_KEY` values private and do not commit them.
+To deploy the API and UI with Render, create a Blueprint from `render.yaml`. Add your Aiven MySQL password to the API service environment; the container applies pending migrations on startup. Set the initial admin email and password if you want the migration to seed an administrator. The Aiven Project CA certificate is bundled as `aiven-ca.pem` and configured as the MySQL SSL CA. Update this certificate if the Aiven project CA is rotated. The Blueprint sets the UI URL as the CORS origin. Keep generated `JWT_SECRET` and `REFRESH_TOKEN_KEY` values private and do not commit them.
 
 Migration `006_normalize_products_table` aligns an existing `products` table with the API's `id`, `name`, `description`, `price`, and `stock` fields. Recognized legacy column names are renamed in place; missing optional/product fields are added without dropping existing rows.
 

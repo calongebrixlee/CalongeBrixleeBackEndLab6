@@ -16,9 +16,7 @@ class Create_initial_admin {
         $password = (string) getenv('INITIAL_ADMIN_PASSWORD');
 
         if ($email === '' && $password === '') {
-            throw new RuntimeException(
-                'Set INITIAL_ADMIN_EMAIL and INITIAL_ADMIN_PASSWORD before running migrations.'
-            );
+            return;
         }
 
         if (!filter_var($email, FILTER_VALIDATE_EMAIL) || trim($password) === '') {
