@@ -80,7 +80,7 @@ class Auth extends Controller {
         $tokens = $this->api->issue_tokens([
             'id'     => $user_id,
             'role'   => 'user',
-            'scopes' => ['read'],
+            'scopes' => ['products:read', 'products:write', 'products:delete'],
         ]);
 
         $this->api->respond([
