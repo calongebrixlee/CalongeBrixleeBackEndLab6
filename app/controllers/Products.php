@@ -95,7 +95,16 @@ class Products extends Controller {
                 ], 201);
             }
 
-            $this->api->respond_error('Product could not be saved. Check the backend logs for details.', 500);
+            $this->api->respond([
+                'error'  => 'Product could not be saved.',
+                'status' => 500,
+                'diagnostic' => [
+                    'step' => $step,
+                    'type' => get_class($error),
+                    'code' => (string) $error->getCode(),
+                    'message' => $this->safe_error_message($error->getMessage()),
+                ],
+            ], 500);
         }
     }
 
@@ -226,6 +235,18 @@ class Products extends Controller {
     private function find_product($id)
     {
         return $this->db->table('products')->where('id', $id)->get();
+    }
+
+    private function safe_error_message($message)
+    {
+        foreach (['DB_PASSWORD', 'JWT_SECRET', 'REFRESH_TOKEN_KEY'] as $key) {
+            $secret = getenv($key);
+            if (is_string($secret) && $secret !== '') {
+                $message = str_replace($secret, '[redacted]', $message);
+            }
+        }
+
+        return substr($message, 0, 500);
     }
 
     private function valid_id($id)
