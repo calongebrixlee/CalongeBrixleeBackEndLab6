@@ -53,7 +53,14 @@ class Products extends Controller {
         }
 
         $id = $this->db->table('products')->insert($product['data']);
+        if (!is_numeric($id) || (int) $id < 1) {
+            $this->api->respond_error('Product could not be saved. Please try again.', 500);
+        }
+
         $created = $this->find_product($id);
+        if (!$created) {
+            $created = ['id' => (int) $id] + $product['data'];
+        }
 
         $this->api->respond(['data' => $created], 201);
     }
