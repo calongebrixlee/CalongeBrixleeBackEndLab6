@@ -15,7 +15,26 @@ class Auth extends Controller {
 
     public function health()
     {
-        $this->db->raw('SELECT id, name, description, price, stock FROM products LIMIT 0');
+        $driver = strtolower(database_config()['main']['driver'] ?? 'mysql');
+        if ($driver === 'sqlite') {
+            $columns = $this->db->raw('PRAGMA table_info(`products`)')->fetchAll(PDO::FETCH_ASSOC);
+            $columns = array_column($columns, 'name');
+        } else {
+            $columns = $this->db->raw(
+                'SELECT COLUMN_NAME FROM information_schema.columns
+                 WHERE table_schema = DATABASE() AND table_name = ?',
+                ['products']
+            )->fetchAll(PDO::FETCH_COLUMN);
+        }
+
+        $missing = array_values(array_diff(['id', 'name', 'description', 'price', 'stock'], $columns));
+        if ($missing) {
+            $this->api->respond([
+                'status' => 'schema_error',
+                'missing_columns' => $missing,
+            ], 503);
+        }
+
         $this->api->respond([
             'status'   => 'ok',
             'revision' => getenv('RENDER_GIT_COMMIT') ?: 'unknown',
