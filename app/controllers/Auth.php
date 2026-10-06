@@ -15,7 +15,7 @@ class Auth extends Controller {
 
     public function health()
     {
-        $this->db->raw('SELECT 1 FROM products LIMIT 1');
+        $this->db->raw('SELECT id, name, description, price, stock FROM products LIMIT 0');
         $this->api->respond([
             'status'   => 'ok',
             'revision' => getenv('RENDER_GIT_COMMIT') ?: 'unknown',
