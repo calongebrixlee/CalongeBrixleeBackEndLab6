@@ -12,15 +12,15 @@ services:
       - key: DB_DRIVER
         value: mysql
       - key: DB_HOST
-        sync: false
+        value: mysql-299de89-calongebrixlee-4300.e.aivencloud.com
       - key: DB_PORT
-        sync: false
+        value: "16360"
       - key: DB_USER
-        sync: false
+        value: avnadmin
       - key: DB_PASSWORD
         sync: false
       - key: DB_NAME
-        sync: false
+        value: mydb
       - key: DB_SSL_CA
         value: /etc/secrets/ca.pem
       - key: FRONTEND_ORIGIN
